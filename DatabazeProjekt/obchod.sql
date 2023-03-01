@@ -31,12 +31,11 @@ create table produkt(
 create table objednavka(
 	id int primary key identity(1,1),
 	cislo_obj int not null check(cislo_obj > 0),
-	datum date not null default(format (getdate(), 'yyyy-mm-dd')),
+	datum date not null default(format (getdate(), 'yyyy-MM-dd')),
 	zakaznik_id int foreign key references zakaznik(id),
 	produkt_id int foreign key references produkt(id),
 	cena float not null check(cena > 0),
 	zaplaceno bit not null
 );
 
-drop table objednavka;
-select * from objednavka;
+
