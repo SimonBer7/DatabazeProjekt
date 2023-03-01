@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 namespace DatabazeProjekt
 {
     internal class Produkt
-    {
-
+    { 
         private string nazev;
-        private float cena_ks;
+        private string cena_ks;
         private int typ;
 
         public string Nazev
@@ -19,7 +18,7 @@ namespace DatabazeProjekt
             set { nazev = value; }
         }
 
-        public float Cena_ks
+        public string Cena_ks
         {
             get { return cena_ks; }
             set { cena_ks = value; }
@@ -31,7 +30,7 @@ namespace DatabazeProjekt
             set { typ = value; }
         }
 
-        public Produkt(string n, float cen, int tp)
+        public Produkt(string n, string cen, int tp)
         {
             Nazev = n;
             Cena_ks = cen;
@@ -42,11 +41,5 @@ namespace DatabazeProjekt
         {
             return "Produkt " + Nazev + ", cena za kus: " + Cena_ks + ", typ: " + Typ;
         }
-
-
-
-
-
-
     }
 }

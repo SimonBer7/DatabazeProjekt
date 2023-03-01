@@ -7,21 +7,18 @@ namespace DatabazeProjekt
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            Console.WriteLine("Hello, World!"); //tento vypis slouzi pouze k boostu mysleni(ritual)
            
-
             Console.WriteLine("Stiskněte Enter pro připojení do databáze...");
             ConsoleKeyInfo keyInfo = Console.ReadKey();
             while (keyInfo.Key != ConsoleKey.Enter)
             {
                 keyInfo = Console.ReadKey();
             }
-
             Databaze databaze = new Databaze();
-            Evidence evidence = new Evidence();
             if(databaze.CheckConnectu() == true )
             {
-                Console.WriteLine("----------------------------------"+"Pripojeno" +"----------------------------------");
+                Console.WriteLine("----------------------------------"+"Pripojeno"+"----------------------------------");
                 Console.WriteLine();
             }
             else
@@ -29,26 +26,26 @@ namespace DatabazeProjekt
                 Console.WriteLine("Error, with connecting to database");
                 Environment.Exit(0);
             }
-
+            bool byloVypsano = false;
             bool running = true;
+            
+            //hlavni cyklus
             while (running)
             {
-                Console.Write("Vyber =>\n1) C(reate)\n2) R(ead)\n3) U(pdate)\n4) D(elete)\n5) EXIT\n");
+                Console.Write("Vyber =>\n1) C(reate)\n2) R(ead)\n3) U(pdate)\n4) D(elete)\n5) RESET\n6) EXIT\n");
                 int volba;
                 do
                 {
-                    Console.Write("Vaše volba (1-5): ");
-                } while (!int.TryParse(Console.ReadLine(), out volba) || volba < 1 || volba > 5);
+                    Console.Write("Vaše volba (1-6): ");
+                } while (!int.TryParse(Console.ReadLine(), out volba) || volba < 1 || volba > 6);
 
-                volba = volba - 1;
-                bool byloVypsano = false;
-
+                volba = volba - 1;      
                 switch (volba)
                 {
                     case 0:
                         //CREATE
                         Console.WriteLine("--------------------------------------CREATE--------------------------------------");
-                        if (byloVypsano == false)
+                        if (!byloVypsano)
                         {
                             Console.WriteLine("\n1) Default insert\n2) Vlastni insert\n");
                             int vyber;
@@ -56,14 +53,15 @@ namespace DatabazeProjekt
                             {
                                 Console.Write("Vaše volba (1/2): ");
                             } while (!int.TryParse(Console.ReadLine(), out vyber) || vyber < 1 || vyber > 2);
+
                             if (vyber == 1)
                             {
                                 databaze.DefaultInsert();
                                 byloVypsano = true;
+                                Console.WriteLine("----------------------------------------------------------------------------------");
                             }
                             else
                             {
-                                
                                 Console.Write("\nDo ktere tabulky chcete vkladat data =>\n1) Zakaznik\n2) Adresa\n3) Produkt\n4) Typ\n5) Objednavka\n");
                                 int vyberVytvoreni;
                                 do
@@ -72,26 +70,56 @@ namespace DatabazeProjekt
                                 } while (!int.TryParse(Console.ReadLine(), out vyberVytvoreni) || vyberVytvoreni < 1 || vyberVytvoreni > 5);
                                 if (vyberVytvoreni == 1)
                                 {
-                                    VytvareniZakaznika(databaze, evidence);
+                                    VytvareniZakaznika(databaze);
                                 }
                                 if (vyberVytvoreni == 2)
                                 {
-                                    VytvareniAdresy(databaze, evidence);
+                                    VytvareniAdresy(databaze);
                                 }
                                 if (vyberVytvoreni == 3)
                                 {
-                                    VytvareniProduktu(databaze, evidence);
+                                    VytvareniProduktu(databaze);
                                 }
                                 if (vyberVytvoreni == 4)
                                 {
-                                    VytvareniTypu(databaze, evidence);
+                                    VytvareniTypu(databaze);
                                 }
                                 if (vyberVytvoreni == 5)
                                 {
-                                    VytvareniObjednavky(databaze, evidence);
+                                    VytvareniObjednavky(databaze);
                                 }
                                 Console.WriteLine("----------------------------------------------------------------------------------");
                             }
+                        }
+                        else
+                        {
+                            Console.Write("\nDo ktere tabulky chcete vkladat data =>\n1) Zakaznik\n2) Adresa\n3) Produkt\n4) Typ\n5) Objednavka\n");
+                            int vyberVytvoreni;
+                            do
+                            {
+                                Console.Write("Vaše volba (1-5): ");
+                            } while (!int.TryParse(Console.ReadLine(), out vyberVytvoreni) || vyberVytvoreni < 1 || vyberVytvoreni > 5);
+                            if (vyberVytvoreni == 1)
+                            {
+                                VytvareniZakaznika(databaze);
+                            }
+                            if (vyberVytvoreni == 2)
+                            {
+                                VytvareniAdresy(databaze);
+                            }
+                            if (vyberVytvoreni == 3)
+                            {
+                                VytvareniProduktu(databaze);
+                            }
+                            if (vyberVytvoreni == 4)
+                            {
+                                VytvareniTypu(databaze);
+                            }
+                            if (vyberVytvoreni == 5)
+                            {
+                                VytvareniObjednavky(databaze);
+                            }
+                            Console.WriteLine("----------------------------------------------------------------------------------");
                         }
                         break;
 
@@ -145,12 +173,9 @@ namespace DatabazeProjekt
                         break;
 
 
-
-                        
-
                     case 3:
                         //DELETE
-                        Console.WriteLine(databaze.Read());
+                        Console.WriteLine("\n-----------------------------------DELETE-----------------------------------"+databaze.Read());
                         Console.Write("\nZ ktere tabulky chcete smazat data =>\n1) Zakaznik\n2) Adresa\n3) Produkt\n4) Typ\n5) Objednavka\n");
                         int vyberDeletu;
                         do
@@ -179,21 +204,25 @@ namespace DatabazeProjekt
                         }
                         break;
 
-                    case 4:
-                        //EXIT
 
+                    case 4:
+                        //RESET
+                        databaze.ResetTables();
+                        Console.WriteLine("-------------------------------------------------------------------------------");
+                        break;
+
+
+                    case 5:
+                        //EXIT
                         Console.WriteLine("Ukoncili jste program.");
                         running = false;
                         break;
                 }
             }
-
-            
-
         }
 
 
-        public static void VytvareniZakaznika(Databaze d, Evidence e)
+        public static void VytvareniZakaznika(Databaze d)
         {
             Console.Write("\nZadej jmeno: ");
             string jmeno = Console.ReadLine();
@@ -206,11 +235,9 @@ namespace DatabazeProjekt
 
             Zakaznik z = new Zakaznik(jmeno, prijmeni, email, adresa_id);
             d.InsertZakaznik(z);    
-
-
         }
 
-        public static void VytvareniAdresy(Databaze d, Evidence e)
+        public static void VytvareniAdresy(Databaze d)
         {
             Console.Write("\nZadej ulici: ");
             string ulice = Console.ReadLine();
@@ -221,15 +248,14 @@ namespace DatabazeProjekt
 
             Adresa a = new Adresa(ulice, psc, mesto);
             d.InsertAdresa(a);
-            
         }
 
-        public static void VytvareniProduktu(Databaze d, Evidence e)
+        public static void VytvareniProduktu(Databaze d)
         {
             Console.Write("\nZadej nazev: ");
             string nazev = Console.ReadLine();
             Console.Write("Zadej cenu na kus: ");
-            float cena_ks = float.Parse(Console.ReadLine());    
+            string cena_ks = Console.ReadLine();    
             Console.Write("Zadej id typu: ");
             int typ = Int32.Parse(Console.ReadLine());
 
@@ -238,7 +264,7 @@ namespace DatabazeProjekt
         }
 
 
-        public static void VytvareniTypu(Databaze d, Evidence e)
+        public static void VytvareniTypu(Databaze d)
         {
             Console.Write("\nZadej nazev: ");
             string nazev = Console.ReadLine();
@@ -247,7 +273,7 @@ namespace DatabazeProjekt
             d.InsertTypu(t);
         }
 
-        public static void VytvareniObjednavky(Databaze d, Evidence e) 
+        public static void VytvareniObjednavky(Databaze d) 
         {
             Console.Write("\nZadej cislo objednavky: ");
             int cislo_obj = Int32.Parse(Console.ReadLine());
@@ -258,10 +284,10 @@ namespace DatabazeProjekt
             Console.Write("\nZadej id produktu: ");
             int produkt_id = Int32.Parse(Console.ReadLine());
             Console.Write("\nZadej cenu objednavky: ");
-            float cena = float.Parse(Console.ReadLine());
+            string cena = Console.ReadLine();
             Console.Write("\nZadej zaplaceno True/False: ");
             bool zaplaceno = bool.Parse(Console.ReadLine());
-
+            
             Objednavka o = new Objednavka(cislo_obj, datum, zakaznik_id, produkt_id, cena, zaplaceno);
             d.InsertObj(o);
         }

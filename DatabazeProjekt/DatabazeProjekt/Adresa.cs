@@ -8,11 +8,9 @@ namespace DatabazeProjekt
 {
     internal class Adresa
     {
-
         private string ulice;
         private int psc;
         private string mesto;
-
 
         public string Ulice
         {
@@ -39,11 +37,9 @@ namespace DatabazeProjekt
             Mesto = me;
         }
 
-
         public override string ToString()
         {
             return "Adresa: " + Ulice + ", " + Psc + ", " + Mesto;
         }
-
     }
 }

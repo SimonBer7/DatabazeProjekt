@@ -8,7 +8,6 @@ namespace DatabazeProjekt
 {
     internal class Typ
     {
-
         private string nazev;
 
         public string Nazev
@@ -26,8 +25,5 @@ namespace DatabazeProjekt
         {
             return "Typ: "+Nazev;
         }
-
-
-
     }
 }

@@ -89,7 +89,10 @@ namespace DatabazeProjekt
             }
         }
 
-
+        /// <summary>
+        /// metoda na executovani prichozich stringu(prikazu)
+        /// </summary>
+        /// <param name="vloz"></param>
         public void CentralMethod(string vloz)
         {
             try
@@ -102,14 +105,59 @@ namespace DatabazeProjekt
                     command.ExecuteNonQuery();
                 }
             }
-            catch
-            {
-                throw new Exception("Error with connecting to database :(");
 
+            catch (SqlException ex)
+            {
+                Console.WriteLine("Error with database: " + ex.Message);
             }
         }
 
+        /// <summary>
+        /// metoda, ve ktere smazu vsechny tably a nasledne je vytvorim (nastavim si tak hezky id od zacatku)
+        /// </summary>
+        public void ResetTables()
+        {
+            List<string> drops = new List<string>();
+            List<string> creates = new List<string>();
+            string dropAdresa = "drop table adresa;";
+            string dropZakaznik = "drop table zakaznik;";
+            string dropTyp = "drop table typ;";
+            string dropProdukt = "drop table Produkt;";
+            string dropObj = "drop table Objednavka;";
 
+            string createAdresa = "create table adresa(id int primary key identity(1,1),ulice varchar(30) not null,psc int not null,mesto varchar(30) not null);";
+            string createZakaznik = "create table zakaznik(id int primary key identity(1,1),jmeno varchar(20) not null,prijmeni varchar(20) not null,email varchar(50) not null,adresa_id int foreign key references adresa(id));";
+            string createTyp = "create table typ(id int primary key identity(1,1),nazev varchar(30) not null);";
+            string createProdukt = "create table produkt(id int primary key identity(1,1),nazev varchar(30) not null,cena_ks float not null check(cena_ks > 0),typ int not null foreign key references typ(id));";
+            string createObj = "create table objednavka(id int primary key identity(1,1),cislo_obj int not null check(cislo_obj > 0),datum date not null default(format (getdate(), 'yyyy-MM-dd')),zakaznik_id int foreign key references zakaznik(id),produkt_id int foreign key references produkt(id),cena float not null check(cena > 0),zaplaceno bit not null);";
+            
+            drops.Add(dropObj);
+            drops.Add(dropProdukt);
+            drops.Add(dropZakaznik);
+            drops.Add(dropTyp);
+            drops.Add(dropAdresa);
+
+            creates.Add(createAdresa);
+            creates.Add(createTyp);
+            creates.Add(createZakaznik);
+            creates.Add(createProdukt);
+            creates.Add (createObj);
+           
+            for(int i = 0; i < drops.Count; i++)
+            {
+                this.CentralMethod(drops[i]);
+            }
+
+            for (int i = 0; i < creates.Count; i++)
+            {
+                this.CentralMethod(creates[i]);
+            }
+
+        }
+
+        /// <summary>
+        /// metoda, ve ktere nacitam data z csv souboru a vkladamje do databaze
+        /// </summary>
         public void DefaultInsert()
         {
             List<string> typy = new List<string>(); 
@@ -128,54 +176,37 @@ namespace DatabazeProjekt
                 while (!reader.EndOfStream)
                 {
                     string line = reader.ReadLine();
-                    adresy.Add(line);
+                    line.Split(",").ToList().ForEach(x => adresy.Add(x));
+                    
                 }
             }
 
             List<string> strings = new List<string>();
-            string vlozZak1 = "insert into zakaznik(jmeno, prijmeni, email, adresa_id) values ('Jakub', 'Novak', 'jakub.novak@gmail.com', 1);";
-            string vlozZak2 = "insert into zakaznik(jmeno, prijmeni, email, adresa_id) values ('Karel', 'Zeleny', 'karel.zeleny@gmail.com', 2);";
-            string vlozZak3 = "insert into zakaznik(jmeno, prijmeni, email, adresa_id) values ('Vladimir', 'Modry', 'vlada.modry@gmail.com', 3);";
-
+          
             string vlozAdr1 = "insert into adresa(ulice, psc, mesto) values ('"+adresy[0]+"', " + adresy[1] +", '"+adresy[2]+"');";
             string vlozAdr2 = "insert into adresa(ulice, psc, mesto) values ('" + adresy[3] +"', " + adresy[4] +", '" + adresy[5] +"');";
             string vlozAdr3 = "insert into adresa(ulice, psc, mesto) values ('" + adresy[6] +"', " + adresy[7] +", '" + adresy[8] +"');";
-
             string vlozTyp1 = "insert into typ(nazev) values('" + typy[0] +"')";
             string vlozTyp2 = "insert into typ(nazev) values('" + typy[1] +"')";
             string vlozTyp3 = "insert into typ(nazev) values('" + typy[2] +"')";
 
-            string vlozProdukt1 = "insert into produkt(nazev, cena_ks, typ) values('Rohlik', 5, 1)";
-            string vlozProdukt2 = "insert into produkt(nazev, cena_ks, typ) values('Meda', 200, 2)";
-            string vlozProdukt3 = "insert into produkt(nazev, cena_ks, typ) values('AK-47', 7000, 3)";
-
-            string vlozObj1 = "insert into objednvka(cislo_obj, datum, zakaznik_id, produkt_id, cena, zaplaceno) values (100, '2022-05-02', 1, 1, 5, 1);";
-            string vlozObj2 = "insert into objednvka(cislo_obj, datum, zakaznik_id, produkt_id, cena, zaplaceno) values (101, '2022-07-11', 2, 2, 200, 0);";
-            string vlozObj3 = "insert into objednvka(cislo_obj, datum, zakaznik_id, produkt_id, cena, zaplaceno) values (102, '2022-11-28', 3, 3, 7000, 1);";
-
-            strings.Add(vlozZak1);
-            strings.Add(vlozZak2);
-            strings.Add(vlozZak3);
             strings.Add(vlozAdr1);
             strings.Add(vlozAdr2);
             strings.Add(vlozAdr3);
             strings.Add(vlozTyp1);
             strings.Add(vlozTyp2);
             strings.Add(vlozTyp3);
-            strings.Add(vlozProdukt1);
-            strings.Add(vlozProdukt2);
-            strings.Add(vlozProdukt3);
-            strings.Add(vlozObj1);
-            strings.Add(vlozObj2);
-            strings.Add(vlozObj3);
-
-
+            
             for (int i = 0; i < strings.Count; i++)
             {
                 CentralMethod(strings[i]);
             }
         }
 
+        /// <summary>
+        /// metoda, ktera slouzi pro vypis vsech dat z jednotlivych tabulek
+        /// </summary>
+        /// <returns></returns>
         public string Read()
         {
             string vypis = "--------------------------------------READ--------------------------------------\n";
@@ -209,8 +240,6 @@ namespace DatabazeProjekt
                 string ulice = (string)reader["ulice"];
                 int psc = (int)reader["psc"];
                 string mesto = (string)reader["mesto"];
-
-
                 Adresa a = new Adresa(ulice, psc, mesto);
                 vypis += a.ToString() + "\n";
             }
@@ -236,8 +265,15 @@ namespace DatabazeProjekt
         /// <param name="z"></param>
         public void InsertZakaznik(Zakaznik z)
         {
-            string vlozZak = "insert into zakaznik(jmeno, prijmeni, email, adresa_id) values ('" + z.Jmeno + "', '" + z.Prijmeni + "', '" + z.Email + "', " + z.Adresa_id + ");";
-            this.CentralMethod(vlozZak);
+            string vlozZak = "insert into zakaznik(jmeno, prijmeni, email, adresa_id) values ('" + z.Jmeno + "', '" + z.Prijmeni + "', '" + z.Email + "', " + z.Adresa_id + ");";
+            using (SqlCommand command = new SqlCommand(vlozZak, connection))
+            {
+                command.Parameters.AddWithValue("@jmeno", z.Jmeno);
+                command.Parameters.AddWithValue("@prijmeni", z.Prijmeni);
+                command.Parameters.AddWithValue("@email", z.Email);
+                command.Parameters.AddWithValue("@adresa_id", z.Adresa_id);
+                this.CentralMethod(vlozZak);
+            }
         }
 
         public string ReadZakaznikFromDatabase()
@@ -252,7 +288,6 @@ namespace DatabazeProjekt
                 string prijmeni = (string)reader["prijmeni"];
                 string email = (string)reader["email"];
                 int adresa_id = (int)reader["adresa_id"];
-
                 Zakaznik z = new Zakaznik(jmeno, prijmeni, email, adresa_id);
                 vypis += z.ToString() + "\n";
             }
@@ -270,7 +305,6 @@ namespace DatabazeProjekt
             string del = "delete from zakaznik;";
             this.CentralMethod(del);
         }
-
 
         /// <summary>
         /// CRUD Typu
@@ -291,7 +325,6 @@ namespace DatabazeProjekt
             while (reader.Read())
             {
                 string nazev = (string)reader["nazev"];
-
                 Typ t = new Typ(nazev);
                 vypis += t.ToString() + "\n";
             }
@@ -318,7 +351,13 @@ namespace DatabazeProjekt
         public void InsertProdukt(Produkt p)
         {
             string vlozProdukt = "insert into produkt(nazev, cena_ks, typ) values ('" + p.Nazev + "', " + p.Cena_ks + ", " + p.Typ + ");";
-            this.CentralMethod(vlozProdukt);
+            using (SqlCommand command = new SqlCommand(vlozProdukt, connection))
+            {
+                command.Parameters.AddWithValue("@nazev", p.Nazev);
+                command.Parameters.AddWithValue("@cena_ks", p.Cena_ks);
+                command.Parameters.AddWithValue("@typ", p.Typ);
+                this.CentralMethod(vlozProdukt);
+            }
         }
 
         public string ReadProduktFromDatabase()
@@ -330,10 +369,10 @@ namespace DatabazeProjekt
             while (reader.Read())
             {
                 string nazev = (string)reader["nazev"];
-                float cena_ks = (float)reader["cena_ks"];
+                double cena_ks = (double)reader["cena_ks"];
                 int typ = (int)reader["typ"];
-
-                Produkt p = new Produkt(nazev, cena_ks, typ);
+                string cena = cena_ks.ToString();
+                Produkt p = new Produkt(nazev, cena, typ);
                 vypis += p.ToString() + "\n";
             }
             return vypis;
@@ -364,8 +403,17 @@ namespace DatabazeProjekt
             {
                 bit = 1;
             }
-            string vlozObj = "insert into objednavka(cislo_obj, datum, zakaznik_id, produkt_id, cena, zaplaceno) values ("+o.Cislo_obj+", '"+o.Datum+"', "+o.Zakaznik_id+", "+o.Produkt_id+", "+o.Cena+", "+bit+");";
-            this.CentralMethod(vlozObj);
+            string vlozObj = "insert into objednavka(cislo_obj, datum, zakaznik_id, produkt_id, cena, zaplaceno) values ("+o.Cislo_obj+", '"+o.Datum.ToString("yyyy-MM-dd")+"', "+o.Zakaznik_id+", "+o.Produkt_id+", "+o.Cena+", "+bit+");";
+            using (SqlCommand command = new SqlCommand(vlozObj, connection))
+            {
+                command.Parameters.AddWithValue("@cislo_obj", o.Cislo_obj);
+                command.Parameters.AddWithValue("@datum", o.Datum);
+                command.Parameters.AddWithValue("@zakaznik_id", o.Zakaznik_id);
+                command.Parameters.AddWithValue("@produkt_id", o.Produkt_id);
+                command.Parameters.AddWithValue("@cena", o.Cena);
+                command.Parameters.AddWithValue("@zaplaceno", o.Zaplaceno);
+                this.CentralMethod(vlozObj);
+            }
         }
 
         public string ReadObjFromDatabase()
@@ -380,10 +428,10 @@ namespace DatabazeProjekt
                 DateTime datum = (DateTime)reader["datum"];
                 int zakaznik_id = (int)reader["zakaznik_id"];
                 int produkt_id = (int)reader["produkt_id"];
-                float cena = (float)reader["cena"];
+                double cena = (double)reader["cena"];
                 bool zaplaceno = (bool)reader["zaplaceno"];
-
-                Objednavka o = new Objednavka(cislo_obj, datum, zakaznik_id, produkt_id, cena, zaplaceno);
+                string cena_celkem = cena.ToString();
+                Objednavka o = new Objednavka(cislo_obj, datum, zakaznik_id, produkt_id, cena_celkem, zaplaceno);
                 vypis += o.ToString() + "\n";
             }
             return vypis;

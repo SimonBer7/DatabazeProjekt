@@ -8,12 +8,10 @@ namespace DatabazeProjekt
 {
     internal class Zakaznik
     {
-
         private string jmeno;
         private string prijmeni;
         private string email;
         private int adresa_id;
-
 
         public string Jmeno
         {
@@ -50,13 +48,9 @@ namespace DatabazeProjekt
             Adresa_id = adr;
         }
 
-
         public override string ToString()
         {
             return "Zakaznik " + Jmeno + " " + Prijmeni + ", email: " + Email + ", adresa: "+Adresa_id;
         }
-
-
-
     }
 }

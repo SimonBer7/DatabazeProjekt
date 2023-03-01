@@ -8,14 +8,12 @@ namespace DatabazeProjekt
 {
     internal class Objednavka
     {
-
         private int cislo_obj;
         private DateTime datum;
         private int zakaznik_id;
         private int produkt_id;
-        private float cena;
+        private string cena;
         private bool zaplaceno;
-
 
         public int Cislo_obj
         {
@@ -47,7 +45,7 @@ namespace DatabazeProjekt
             }
         }
 
-        public float Cena
+        public string Cena
         {
             get { return cena; }
             set
@@ -65,7 +63,7 @@ namespace DatabazeProjekt
             }
         }
 
-        public Objednavka(int cis, DateTime dat, int zak, int prod, float cen, bool zap)
+        public Objednavka(int cis, DateTime dat, int zak, int prod, string cen, bool zap)
         {
             Cislo_obj = cis;
             Datum = dat;
@@ -73,16 +71,11 @@ namespace DatabazeProjekt
             Produkt_id = prod;
             Cena = cen;
             Zaplaceno = zap;
-
         }
 
         public override string ToString()
         {
-            return "Objednavka č." + Cislo_obj + ", datum: " + Datum + ", zakaznik id: " + Zakaznik_id + ", produkt id: " + Produkt_id + ", cena: " + Cena + ", zaplaceno: " + Zaplaceno;
+            return "Objednavka č." + Cislo_obj + ", datum: " + Datum.ToLongDateString() + ", zakaznik id: " + Zakaznik_id + ", produkt id: " + Produkt_id + ", cena: " + Cena + ", zaplaceno: " + Zaplaceno;
         }
-
-
-
-
     }
 }
