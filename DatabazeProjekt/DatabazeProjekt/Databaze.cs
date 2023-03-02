@@ -42,6 +42,10 @@ namespace DatabazeProjekt
             }
         }
 
+        /// <summary>
+        /// konstruktor
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         public Databaze()
         {
             try
@@ -49,14 +53,18 @@ namespace DatabazeProjekt
                 connection = new SqlConnection(System.Configuration.ConfigurationSettings.AppSettings["ConnectionString"]);
                 connection.Open();
                 Kontrola = true;
+                connection.Close();
             }
-            catch {
-                throw new Exception("Error with connecting to database :(");
-
+            catch (SqlException ex)
+            {
+                Console.WriteLine("Error with database: " + ex.Message);
             }
-           
-
         }
+
+        /// <summary>
+        /// metoda, ktera vraci true/false podle pripojeni do databaze
+        /// </summary>
+        /// <returns></returns>
         public bool CheckConnectu()
         {
             if(Kontrola == true) { return true; } else
@@ -104,6 +112,7 @@ namespace DatabazeProjekt
                 {
                     command.ExecuteNonQuery();
                 }
+                connection.Close();
             }
 
             catch (SqlException ex)
@@ -234,6 +243,7 @@ namespace DatabazeProjekt
             string vypis = "";
             string selectAdresy = "select * from adresa;";
             using SqlCommand command = new SqlCommand(selectAdresy, connection);
+            connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
@@ -243,6 +253,7 @@ namespace DatabazeProjekt
                 Adresa a = new Adresa(ulice, psc, mesto);
                 vypis += a.ToString() + "\n";
             }
+            connection.Close();
             return vypis;
         }
 
@@ -281,6 +292,7 @@ namespace DatabazeProjekt
             string vypis = "";
             string selectAdresy = "select * from zakaznik;";
             using SqlCommand command = new SqlCommand(selectAdresy, connection);
+            connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
@@ -291,6 +303,7 @@ namespace DatabazeProjekt
                 Zakaznik z = new Zakaznik(jmeno, prijmeni, email, adresa_id);
                 vypis += z.ToString() + "\n";
             }
+            connection.Close();
             return vypis;
         }
 
@@ -321,6 +334,7 @@ namespace DatabazeProjekt
             string vypis = "";
             string selectAdresy = "select * from typ;";
             using SqlCommand command = new SqlCommand(selectAdresy, connection);
+            connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
@@ -328,6 +342,7 @@ namespace DatabazeProjekt
                 Typ t = new Typ(nazev);
                 vypis += t.ToString() + "\n";
             }
+            connection.Close();
             return vypis;
         }
 
@@ -365,6 +380,7 @@ namespace DatabazeProjekt
             string vypis = "";
             string selectAdresy = "select * from produkt;";
             using SqlCommand command = new SqlCommand(selectAdresy, connection);
+            connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
@@ -375,6 +391,7 @@ namespace DatabazeProjekt
                 Produkt p = new Produkt(nazev, cena, typ);
                 vypis += p.ToString() + "\n";
             }
+            connection.Close();
             return vypis;
         }
 
@@ -389,7 +406,6 @@ namespace DatabazeProjekt
             string del = "delete from produkt;";
             this.CentralMethod(del);
         }
-
 
 
         /// <summary>
@@ -421,6 +437,7 @@ namespace DatabazeProjekt
             string vypis = "";
             string selectAdresy = "select * from objednavka;";
             using SqlCommand command = new SqlCommand(selectAdresy, connection);
+            connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             { 
@@ -434,6 +451,7 @@ namespace DatabazeProjekt
                 Objednavka o = new Objednavka(cislo_obj, datum, zakaznik_id, produkt_id, cena_celkem, zaplaceno);
                 vypis += o.ToString() + "\n";
             }
+            connection.Close();
             return vypis;
         }
 
